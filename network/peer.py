@@ -1,15 +1,14 @@
 # network/peer.py
 import socket
 import threading
-from protocol.message_handler import MessageHandler
+from protocol.handler import MessageHandler
 
 class Peer:
     def __init__(self, peer_id, role, port, neighbors):
         self.peer_id = peer_id
         self.role = role  # "buyer" or "seller"
         self.port = port
-        self.neighbors = neighbors
-        self.items = 5 if role == "seller" else 0
+        self.neighbors = neighbors  # List of neighbor ports
         self.running = True
         self.message_handler = MessageHandler(self)
 
@@ -18,11 +17,10 @@ class Peer:
         server_thread = threading.Thread(target=self.listen_for_requests)
         server_thread.start()
 
-        # Buyers will initiate the buying process
         if self.role == "buyer":
             from services.buyer_service import BuyerService
-            buyer = BuyerService(self)
-            buyer.start_buying()
+            buyer_service = BuyerService(self)
+            buyer_service.start_buying()
 
     def listen_for_requests(self):
         # Listen for incoming connections and handle requests
@@ -36,8 +34,7 @@ class Peer:
                 threading.Thread(target=self.handle_request, args=(conn,)).start()
 
     def handle_request(self, conn):
-        # Delegate the message handling to MessageHandler
-        self.message_handler.handle(conn)
+        self.message_handler.handle_message(conn)
         conn.close()
 
     def stop(self):
