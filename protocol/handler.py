@@ -25,38 +25,42 @@ class MessageHandler:
     def handle_lookup(self, message):
         print(f"DEBUG: Entered handle_lookup for Peer {self.peer.peer_id} with message: {message}")
 
-        # Check if peer is a seller
-        if self.peer.role == "seller":
+        # Check if peer is a seller and has stock
+        if self.peer.role == "seller" and self.peer.stock > 0:
             print(f"DEBUG: Peer {self.peer.peer_id} is a seller. Proceeding to product check.")
 
-            # Check if product matches
+            # Check if the product matches
             if message['product_name'] == self.peer.product_name:
                 print(f"DEBUG: Peer {self.peer.peer_id} found the product {self.peer.product_name}.")
 
-                # Send reply to buyer
+                # Get the buyer's port dynamically
+                buyer_id = message['buyer_id']
+                buyer_port = self.peer.port_mapping.get(buyer_id, None)
+
+                if buyer_port is None:
+                    print(f"ERROR: Could not find a valid port for Buyer {buyer_id}")
+                    return
+
+                # Send a reply message to the buyer
                 reply_message = Message.reply(
                     seller_id=self.peer.peer_id,
                     buyer_id=message['buyer_id'],
                     product_name=message['product_name'],
                     path=message['path']
                 )
-
-                # Use the dynamically assigned port for the buyer (Peer 0)
-                buyer_port = self.peer.neighbors[0]  # Get the port of Peer 0 from neighbors list
-
-                print(f"DEBUG: Peer {self.peer.peer_id} preparing to send reply to Peer {message['buyer_id']} on port {buyer_port}")
+                print(f"DEBUG: Peer {self.peer.peer_id} preparing to send reply to Peer {buyer_port}")
                 self.send_message(reply_message, buyer_port)
                 print(f"DEBUG: Peer {self.peer.peer_id} successfully sent reply.")
             else:
                 print(f"DEBUG: Peer {self.peer.peer_id} does not have the requested product.")
-        else:
-            print(f"DEBUG: Peer {self.peer.peer_id} is not a seller.")
-
+        elif self.peer.stock == 0:
+            print(f"DEBUG: Peer {self.peer.peer_id} is out of stock.")
 
     def propagate(self, message):
         # Propagate the message to all neighbors
         for neighbor_port in self.peer.neighbors:
             self.send_message(message, neighbor_port)
+
 
     def send_message(self, message, port):
         print(f"Peer {self.peer.peer_id} is attempting to send message to port {port}")
@@ -70,7 +74,6 @@ class MessageHandler:
 
     def handle_reply(self, message):
         print(f"Peer {self.peer.peer_id} (buyer) received reply from seller {message['seller_id']}")
-        
         if self.peer.role == "buyer":
             # Send a buy message to the seller
             buy_message = Message.buy(
@@ -78,13 +81,19 @@ class MessageHandler:
                 seller_id=message['seller_id'],
                 product_name=message['product_name']
             )
-            
-            # Instead of using hardcoded 5001, we should get the port from the neighbors
-            seller_port = self.peer.neighbors[0]  # Peer 0's neighbor is Peer 1, so use the first neighbor
-            
-            print(f"Peer {self.peer.peer_id} is preparing to send buy message to Seller {message['seller_id']} on port {seller_port}")
-            self.send_message(buy_message, seller_port)
 
+            # Safely retrieve the seller's port from neighbors
+            seller_port = None
+            for port in self.peer.neighbors:
+                if port == self.peer.neighbors[message['seller_id']]:
+                    seller_port = port
+                    break
+
+            if seller_port:
+                print(f"Peer {self.peer.peer_id} is preparing to send buy message to Seller {message['seller_id']} on port {seller_port}")
+                self.send_message(buy_message, seller_port)
+            else:
+                print(f"ERROR: Seller with ID {message['seller_id']} not found in neighbors!")
 
     def handle_buy(self, message):
         print(f"Peer {self.peer.peer_id} (seller) received buy request from buyer {message['buyer_id']} for product {message['product_name']}")
