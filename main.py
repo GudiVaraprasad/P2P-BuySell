@@ -6,8 +6,8 @@ import threading
 
 def initialize_peers():
     peers = [
-        Peer(peer_id=0, role="buyer", port=5000, neighbors=[5001]),
-        Peer(peer_id=1, role="seller", port=5001, neighbors=[5000])
+        Peer(peer_id=0, role="buyer", port=5000, neighbors=[5001], product_name=None),
+        Peer(peer_id=1, role="seller", port=5001, neighbors=[5000], product_name="fish", stock=10)
     ]
     
     # Start listening for each peer in a separate thread

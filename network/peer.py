@@ -3,17 +3,16 @@ import socket
 import threading
 
 class Peer:
-    def __init__(self, peer_id, role, port, neighbors):
+    def __init__(self, peer_id, role, port, neighbors, product_name=None, stock=0):
         self.peer_id = peer_id
-        self.role = role  # Should be 'seller' for Peer 1
+        self.role = role
         self.port = port
         self.neighbors = neighbors
+        self.product_name = product_name
+        self.stock = stock  # Add stock attribute for sellers
         self.running = True
 
-        if self.role == "seller":
-            self.product_name = "fish"  # Set the product for Peer 1
-            self.stock = 5  # Set some initial stock for the seller
-        print(f"Peer {self.peer_id} initialized as {self.role} with product {self.product_name if self.role == 'seller' else 'None'}")
+        print(f"Peer {self.peer_id} initialized as {self.role} with product {self.product_name} and stock {self.stock}")
 
     def start(self):
         # Start listening for requests
