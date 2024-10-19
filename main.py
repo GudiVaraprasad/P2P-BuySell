@@ -17,7 +17,7 @@ if __name__ == "__main__":
     for peer in peers:
         peer.start()
 
-    # Peer 0 sends a structured lookup message to Peer 1
+    # Peer 0 sends a lookup message to Peer 1 (looking for fish)
     lookup_message = Message.lookup(buyer_id=0, product_name="fish", hop_count=3)
     peers[0].send_message(5001, json.dumps(lookup_message))
 

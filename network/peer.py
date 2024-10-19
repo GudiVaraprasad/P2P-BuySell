@@ -1,14 +1,18 @@
 # peer.py
 import socket
 import threading
-
 class Peer:
     def __init__(self, peer_id, role, port, neighbors):
         self.peer_id = peer_id
-        self.role = role  # "buyer" or "seller"
+        self.role = role
         self.port = port
         self.neighbors = neighbors
         self.running = True
+
+        if self.role == "seller":
+            self.product_name = "fish"  # Peer 1 should have "fish"
+            self.stock = 5  # Stock should be initialized
+
 
     def start(self):
         # Start listening for requests
