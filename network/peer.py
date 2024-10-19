@@ -3,16 +3,15 @@ import socket
 import threading
 
 class Peer:
-    def __init__(self, peer_id, role, port, neighbors, product_name=None, stock=0):
+    def __init__(self, peer_id, role, neighbors, product_name=None, stock=0):
         self.peer_id = peer_id
         self.role = role
-        self.port = port
+        self.port = None  # Dynamically assigned later
         self.neighbors = neighbors
         self.product_name = product_name
-        self.stock = stock  # Add stock attribute for sellers
+        self.stock = stock
         self.running = True
 
-        print(f"Peer {self.peer_id} initialized as {self.role} with product {self.product_name} and stock {self.stock}")
 
     def start(self):
         # Start listening for requests
@@ -20,17 +19,18 @@ class Peer:
 
     def listen_for_requests(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+            server.bind(('localhost', 0))  # Bind to port 0 to let the OS choose an available port
+            self.port = server.getsockname()[1]  # Retrieve the dynamically assigned port
+            print(f"Peer {self.peer_id} is listening on dynamically assigned port {self.port}")
+            
+            server.listen(5)
             try:
-                server.bind(('localhost', self.port))
-                server.listen(5)
-                print(f"Peer {self.peer_id} is listening on port {self.port}")
-                
                 while self.running:
                     conn, addr = server.accept()
                     print(f"Peer {self.peer_id} received connection from {addr}")
                     threading.Thread(target=self.handle_request, args=(conn,)).start()
-            except OSError as e:
-                print(f"Error binding Peer {self.peer_id} to port {self.port}: {e}")
+            except Exception as e:
+                print(f"Error in Peer {self.peer_id}: {e}")
             finally:
                 server.close()
 

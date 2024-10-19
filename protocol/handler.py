@@ -33,15 +33,18 @@ class MessageHandler:
             if message['product_name'] == self.peer.product_name:
                 print(f"DEBUG: Peer {self.peer.peer_id} found the product {self.peer.product_name}.")
 
-                # Send reply
+                # Send reply to buyer
                 reply_message = Message.reply(
                     seller_id=self.peer.peer_id,
                     buyer_id=message['buyer_id'],
                     product_name=message['product_name'],
                     path=message['path']
                 )
-                buyer_port = 5000
-                print(f"DEBUG: Peer {self.peer.peer_id} preparing to send reply: {reply_message}")
+
+                # Use the dynamically assigned port for the buyer (Peer 0)
+                buyer_port = self.peer.neighbors[0]  # Get the port of Peer 0 from neighbors list
+
+                print(f"DEBUG: Peer {self.peer.peer_id} preparing to send reply to Peer {message['buyer_id']} on port {buyer_port}")
                 self.send_message(reply_message, buyer_port)
                 print(f"DEBUG: Peer {self.peer.peer_id} successfully sent reply.")
             else:
@@ -67,6 +70,7 @@ class MessageHandler:
 
     def handle_reply(self, message):
         print(f"Peer {self.peer.peer_id} (buyer) received reply from seller {message['seller_id']}")
+        
         if self.peer.role == "buyer":
             # Send a buy message to the seller
             buy_message = Message.buy(
@@ -74,8 +78,11 @@ class MessageHandler:
                 seller_id=message['seller_id'],
                 product_name=message['product_name']
             )
-            seller_port = 5001  # Ensure the correct port for Peer 1
-            print(f"Peer {self.peer.peer_id} is preparing to send buy message to Seller {message['seller_id']}")
+            
+            # Instead of using hardcoded 5001, we should get the port from the neighbors
+            seller_port = self.peer.neighbors[0]  # Peer 0's neighbor is Peer 1, so use the first neighbor
+            
+            print(f"Peer {self.peer.peer_id} is preparing to send buy message to Seller {message['seller_id']} on port {seller_port}")
             self.send_message(buy_message, seller_port)
 
 
