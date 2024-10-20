@@ -9,5 +9,17 @@ This project implements a decentralized, peer-to-peer marketplace modeled after 
 How to run this project:
 
 ```
-python main.py
+python main.py <N Peers>
 ```
+
+N Peers: This refers to the number of participants or nodes in the P2P network. ( N ) represents the total number of peers (participants) in the system, such as buyers and sellers. It’s passed as a command-line argument or specified beforehand, and each peer can be a buyer or a seller.
+
+**Example:**
+
+```
+python main.py 6
+```
+
+### Expected Output
+
+![Sample Output](./output.png "Sample output")

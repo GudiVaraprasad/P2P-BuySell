@@ -12,6 +12,7 @@ class Peer:
         self.stock = stock
         self.running = True
         self.lock = threading.Lock()  # Lock for synchronization
+        self.processed_requests = set()  # Initialize a set to track processed requests
 
 
     def start(self):
