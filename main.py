@@ -32,7 +32,7 @@ def initialize_peers(N):
     for peer_id, role in enumerate(peer_roles):
         if 'seller' in role:
             product_name = role.split('_')[0]  # Extract the product name (e.g., 'fish', 'salt', 'boar')
-            stock = random.randint(5, 15)  # Random stock between 5 and 15
+            stock = random.randint(2, 5)  # Random stock between 2 and 5
             peers.append(Peer(peer_id=peer_id, role="seller", neighbors=[], product_name=product_name, stock=stock))
         else:
             peers.append(Peer(peer_id=peer_id, role="buyer", neighbors=[], product_name=None))
@@ -73,9 +73,20 @@ def continue_search(buyer_peer, product_name, max_hops=3):
 def switch_product(seller_peer, products):
     new_product = random.choice(products)
     seller_peer.product_name = new_product
-    seller_peer.stock = random.randint(5, 15)
+    seller_peer.stock = random.randint(2, 5)   # Random stock between 2 and 5
     print(f"Seller {seller_peer.peer_id} now sells {new_product} with {seller_peer.stock} items remaining")
 
+# New function to continuously search for products as a buyer
+def buyer_behavior(buyer_peer, products):
+    """Buyer continuously searches for products with random delays between searches."""
+    while True:
+        product_to_buy = random.choice(products)
+        continue_search(buyer_peer, product_to_buy)
+        
+        # Wait for a random amount of time before the next search
+        wait_time = random.randint(5, 7)  # Wait for 5 to 7 seconds
+        print(f"Buyer {buyer_peer.peer_id} will wait {wait_time} seconds before the next purchase.")
+        time.sleep(wait_time)
 
 if __name__ == "__main__":
     N = 6  # Number of peers (you can make this a command-line argument)
@@ -94,12 +105,11 @@ if __name__ == "__main__":
     buyer_peers = [peer for peer in peers if peer.role == 'buyer']
     seller_peers = [peer for peer in peers if peer.role == 'seller']
     
-    # Let the buyers start searching for products
+    # Let the buyers start searching for products continuously
     products = ['fish', 'salt', 'boar']
     
     for buyer in buyer_peers:
-        selected_product = random.choice(products)  # Randomly select a product
-        continue_search(buyer, selected_product)
+        threading.Thread(target=buyer_behavior, args=(buyer, products)).start()  # Start buyer behavior in threads
 
     # Simulate some sellers selling out and switching products
     time.sleep(5)  # Wait for some transactions

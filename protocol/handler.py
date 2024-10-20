@@ -93,10 +93,12 @@ class MessageHandler:
 
     def handle_buy(self, message):
         print(f"Peer {self.peer.peer_id} (seller) received buy request from buyer {message['buyer_id']} for product {message['product_name']}")
-        
-        if self.peer.stock > 0:
-            self.peer.stock -= 1
-            print(f"Seller {self.peer.peer_id} sold {message['product_name']} to Buyer {message['buyer_id']}")
-            print(f"Seller {self.peer.peer_id} now has {self.peer.stock} items remaining")
-        else:
-            print(f"Seller {self.peer.peer_id} is out of stock!")
+
+        # Use the lock to ensure thread-safe stock decrement
+        with self.peer.lock:
+            if self.peer.stock > 0:
+                self.peer.stock -= 1
+                print(f"Seller {self.peer.peer_id} sold {message['product_name']} to Buyer {message['buyer_id']}")
+                print(f"Seller {self.peer.peer_id} now has {self.peer.stock} items remaining")
+            else:
+                print(f"Seller {self.peer.peer_id} is out of stock!")

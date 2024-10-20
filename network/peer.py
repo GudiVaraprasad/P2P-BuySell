@@ -11,6 +11,7 @@ class Peer:
         self.product_name = product_name
         self.stock = stock
         self.running = True
+        self.lock = threading.Lock()  # Lock for synchronization
 
 
     def start(self):
