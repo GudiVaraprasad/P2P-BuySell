@@ -23,13 +23,13 @@ class Peer:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
             server.bind(('localhost', 0))  # Bind to port 0 to let the OS choose an available port
             self.port = server.getsockname()[1]  # Retrieve the dynamically assigned port
-            print(f"Peer {self.peer_id} is listening on dynamically assigned port {self.port}")
+            # print(f"Peer {self.peer_id} is listening on dynamically assigned port {self.port}")
             
             server.listen(5)
             try:
                 while self.running:
                     conn, addr = server.accept()
-                    print(f"Peer {self.peer_id} received connection from {addr}")
+                    # print(f"Peer {self.peer_id} received connection from {addr}")
                     threading.Thread(target=self.handle_request, args=(conn,)).start()
             except Exception as e:
                 print(f"Error in Peer {self.peer_id}: {e}")
@@ -49,6 +49,6 @@ class Peer:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 sock.connect(('localhost', neighbor_port))
                 sock.send(message.encode())
-                print(f"Peer {self.peer_id} sent message: {message}")
+                # print(f"Peer {self.peer_id} sent message: {message}")
         except Exception as e:
             print(f"Error sending message to peer on port {neighbor_port}: {e}")

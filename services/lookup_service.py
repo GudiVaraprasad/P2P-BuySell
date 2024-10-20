@@ -3,7 +3,7 @@ import threading
 
 def handle_lookup(peer, message):
     """Handle incoming lookup requests."""
-    print(f"DEBUG: Entered handle_lookup for Peer {peer.peer_id} with message: {message}")
+    # print(f"DEBUG: Entered handle_lookup for Peer {peer.peer_id} with message: {message}")
 
     # Prevent handling duplicate lookup requests by tracking request IDs (or timestamps)
     request_id = (message['buyer_id'], message['product_name'])
@@ -17,7 +17,7 @@ def handle_lookup(peer, message):
         # Check if the seller has the requested product
         with peer.lock:
             if message['product_name'] == peer.product_name and peer.stock > 0:
-                print(f"DEBUG: Peer {peer.peer_id} is a seller. Proceeding to product check.")
+                # print(f"DEBUG: Peer {peer.peer_id} is a seller. Proceeding to product check.")
                 reply_message = Message.reply(
                     seller_id=peer.peer_id,
                     buyer_id=message['buyer_id'],
@@ -29,8 +29,8 @@ def handle_lookup(peer, message):
                     peer.messaging_service.send_message(reply_message, buyer_port)
                     peer.stock -= 1
                     print(f"DEBUG: Peer {peer.peer_id} sold {message['product_name']}. Stock is now {peer.stock}.")
-                else:
-                    print(f"ERROR: Peer {peer.peer_id} could not find port for Buyer {message['buyer_id']}")
+                # else:
+                #     print(f"ERROR: Peer {peer.peer_id} could not find port for Buyer {message['buyer_id']}")
             else:
                 print(f"DEBUG: Peer {peer.peer_id} does not have the requested product or is out of stock.")
     else:

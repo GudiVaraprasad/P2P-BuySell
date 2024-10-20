@@ -17,9 +17,9 @@ N Peers: This refers to the number of participants or nodes in the P2P network. 
 **Example:**
 
 ```
-python main.py 6
+python main.py 2
 ```
 
-### Expected Output
+### Expected Output - 2 peers
 
-![Sample Output](./output.png "Sample output")
+![Sample Output](./results/2%20peers.png "Sample output")

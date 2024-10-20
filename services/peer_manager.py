@@ -1,8 +1,11 @@
 import random
 import time
 import threading
+import networkx as nx  # Import NetworkX
+import matplotlib.pyplot as plt  # Import Matplotlib for plotting
 from network.peer import Peer
-from services.graph_algorithms import calculate_graph_diameter  # Import graph diameter calculation
+from utils.graph_algorithms import calculate_graph_diameter  # Import graph diameter calculation
+from utils.visualize_network import visualize_network
 
 def initialize_peers(N):
     roles = ['fish_seller', 'salt_seller', 'boar_seller', 'buyer']
@@ -42,10 +45,21 @@ def initialize_peers(N):
                 peer_ports[peer.peer_id] = peer.port
         time.sleep(1)
 
-    # Assign neighbors and port mapping to each peer
-    for peer in peers:
-        peer.neighbors = random.sample(list(peer_ports.values()), min(3, N-1))
+    # # Assign neighbors and port mapping to each peer
+    # for peer in peers:
+    #     peer.neighbors = random.sample(list(peer_ports.values()), min(3, 100))
+    #     peer.port_mapping = peer_ports  # Ensure port mapping is assigned here
+
+    # Enforce ring topology (connect each peer to two neighbors, creating a ring)
+    for i, peer in enumerate(peers):
+        peer.neighbors = [
+            peer_ports[(i - 1) % N],  # Connect to the previous peer in the ring
+            peer_ports[(i + 1) % N],  # Connect to the next peer in the ring
+        ]
         peer.port_mapping = peer_ports  # Ensure port mapping is assigned here
+
+    # Display the network structure visually using NetworkX
+    visualize_network(peers)
 
     # After initializing peers, calculate graph diameter
     graph_diameter = calculate_graph_diameter(peers)

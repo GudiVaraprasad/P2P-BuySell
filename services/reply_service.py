@@ -11,7 +11,7 @@ def handle_reply(peer, message):
         )
         seller_port = peer.port_mapping.get(message['seller_id'])
         if seller_port:
-            print(f"DEBUG: Peer {peer.peer_id} is preparing to send buy message to Seller {message['seller_id']} on port {seller_port}")
+            # print(f"DEBUG: Peer {peer.peer_id} is preparing to send buy message to Seller {message['seller_id']} on port {seller_port}")
             peer.messaging_service.send_message(buy_message, seller_port)
         else:
             print(f"ERROR: Could not find port for Seller {message['seller_id']}")

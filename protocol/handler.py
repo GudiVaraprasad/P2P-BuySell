@@ -131,7 +131,7 @@ class MessageHandler:
     def handle_message(self, conn):
         data = conn.recv(1024).decode()
         message = json.loads(data)
-        print(f"Peer {self.peer.peer_id} received message: {message}")
+        # print(f"Peer {self.peer.peer_id} received message: {message}")
 
         if message['type'] == 'lookup':
             handle_lookup(self.peer, message)
