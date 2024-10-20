@@ -13,8 +13,8 @@ if __name__ == "__main__":
 
     N = args.N  # Get the value of N from the command-line argument
 
-    # Initialize peers
-    peers = initialize_peers(N)
+    # Initialize peers and calculate the graph diameter
+    peers, graph_diameter = initialize_peers(N)
 
     # Start all peers
     for peer in peers:
@@ -30,13 +30,11 @@ if __name__ == "__main__":
     
     products = ['fish', 'salt', 'boar']
     
-    # Start buyer threads
+    # Use the calculated graph diameter as the hop count for lookups
     for buyer in buyer_peers:
-        threading.Thread(target=buyer_behavior, args=(buyer, products)).start()
+        threading.Thread(target=buyer_behavior, args=(buyer, products, graph_diameter)).start()
 
     time.sleep(5)
-
-    # Handle product switch for sellers
     for seller in seller_peers:
         if seller.stock <= 0:
             switch_product(seller, products)

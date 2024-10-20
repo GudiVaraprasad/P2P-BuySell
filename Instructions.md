@@ -75,8 +75,8 @@
 
 ### 14. **Use hop count to prevent infinite message propagation (calculate the actual graph diameter and use it to initialize the hop count dynamically)**
 
-- [ ] Use hop count to limit message propagation, avoiding infinite loops in the network.
-  - **Progress:** currently it is assigned to 3 randomly.
+- [x] Use hop count to limit message propagation, avoiding infinite loops in the network.
+  - **Progress:** dynamically calculate the graph diameter (i.e., the maximum shortest path between any two peers)
 
 ### 15. **Max Requests and Evaluation**
 

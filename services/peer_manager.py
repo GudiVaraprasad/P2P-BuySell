@@ -2,6 +2,7 @@ import random
 import time
 import threading
 from network.peer import Peer
+from services.graph_algorithms import calculate_graph_diameter  # Import graph diameter calculation
 
 def initialize_peers(N):
     roles = ['fish_seller', 'salt_seller', 'boar_seller', 'buyer']
@@ -46,4 +47,8 @@ def initialize_peers(N):
         peer.neighbors = random.sample(list(peer_ports.values()), min(3, N-1))
         peer.port_mapping = peer_ports  # Ensure port mapping is assigned here
 
-    return peers
+    # After initializing peers, calculate graph diameter
+    graph_diameter = calculate_graph_diameter(peers)
+    print(f"Calculated graph diameter: {graph_diameter}")
+    
+    return peers, graph_diameter

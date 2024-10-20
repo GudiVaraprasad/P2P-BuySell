@@ -37,13 +37,13 @@ def continue_search(buyer_peer, product_name, max_hops=3):
         print(f"Average response time: {sum(response_times) / len(response_times):.5f} seconds")
         exit(0)  # Terminate the program after max requests
 
-def buyer_behavior(buyer_peer, products):
+def buyer_behavior(buyer_peer, products, hop_count):
     """Buyer continuously searches for products with random delays between searches."""
     while True:
         product_to_buy = random.choice(products)
-        continue_search(buyer_peer, product_to_buy)
+        continue_search(buyer_peer, product_to_buy, hop_count)  # Pass the hop count dynamically
         
         # Wait for a random amount of time before the next search
-        wait_time = random.randint(5, 7)
+        wait_time = random.randint(5, 7)  # Wait for 5 to 7 seconds
         print(f"Buyer {buyer_peer.peer_id} will wait {wait_time} seconds before the next purchase.")
         time.sleep(wait_time)
