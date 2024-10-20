@@ -35,8 +35,8 @@
 
 ### 6. **Random Role Assignment**
 
-- [ ] Once the network is formed, each peer should be assigned a random role as either a fish seller, salt seller, boar seller, or buyer.
-  - **Progress:** Roles are currently assigned manually; random assignment of roles is not yet implemented.
+- [x] Once the network is formed, each peer should be assigned a random role as either a fish seller, salt seller, boar seller, or buyer.
+  - **Progress:** Random assignment of roles, product lookup, and transaction handling are completed.
 
 ### 7. **At Least One Buyer and One Seller**
 
