@@ -1,6 +1,7 @@
 # utils/csv_logger.py
 
 import csv
+import datetime
 import os
 
 # Path to save the CSV file
@@ -19,3 +20,12 @@ def log_to_csv(request_number, product_name, response_time, mode):
     with open(csv_file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([request_number, product_name, response_time, mode])
+
+    
+    # cretaing a text file also
+    """Append a row of request data to a text file with timestamp."""
+    txt_file_path = 'transactions_log.txt'
+    timestamp = datetime.now().strftime("%d.%m.%Y %H:%M:%S.%f")[:-3]
+    
+    with open(txt_file_path, mode='a') as file:
+        file.write(f"{timestamp} - Request {request_number}: {request_number} bought {product_name} from {seller_id}\n")

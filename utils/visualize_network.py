@@ -7,7 +7,7 @@ def visualize_network(peers):
 
     # Add nodes (peers) to the graph with labels (peer ID and role)
     for peer in peers:
-        G.add_node(peer.peer_id, label=f"Peer {peer.peer_id} ({peer.role})")
+        G.add_node(peer.peer_id, label=f"Peer {peer.peer_id} ({peer.role})")  # Use peer attributes correctly
 
     # Add edges (connections between peers) based on neighbors
     added_edges = set()  # To avoid duplicate edges

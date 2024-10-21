@@ -23,15 +23,39 @@ def register_peer(peer_id, peer_ip):
     with registry_lock:
         with open(peer_registry_file, 'r+') as f:
             registry_data = json.load(f)
-            registry_data['peers'][str(peer_id)] = {"ip": peer_ip}
+            registry_data['peers'][str(peer_id)] = {"ip": peer_ip, "port": None, "role": None, "neighbors": []}
             registry_data['connected_peers'] += 1
             
             # Update the registry file
             f.seek(0)
-            json.dump(registry_data, f)
+            json.dump(registry_data, f, indent=4)
             f.truncate()
 
     print(f"Peer {peer_id} with IP {peer_ip} registered successfully.")
+
+
+def update_peer_info(peer_id, port=None, role=None, neighbors=None):
+    """Update peer information in the registry (e.g., port, role, neighbors)."""
+    with registry_lock:
+        with open(peer_registry_file, 'r+') as f:
+            registry_data = json.load(f)
+            peer_info = registry_data['peers'].get(str(peer_id), {})
+
+            if port is not None:
+                peer_info['port'] = port
+            if role is not None:
+                peer_info['role'] = role
+            if neighbors is not None:
+                peer_info['neighbors'] = neighbors
+
+            registry_data['peers'][str(peer_id)] = peer_info
+            
+            # Update the registry file
+            f.seek(0)
+            json.dump(registry_data, f, indent=4)
+            f.truncate()
+
+    print(f"Peer {peer_id} updated with port {port}, role {role}, and neighbors {neighbors}.")
 
 
 def wait_for_all_peers(total_peers):

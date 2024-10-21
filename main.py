@@ -6,7 +6,7 @@ from services.peer_manager import initialize_peers
 from services.buyer_behavior import buyer_behavior
 from services.seller_behavior import switch_product
 from utils.csv_logger import initialize_csv
-from network.peer_registry import initialize_registry, register_peer, wait_for_all_peers
+from network.peer_registry import initialize_registry, register_peer, wait_for_all_peers, update_peer_info
 from network.network_config import load_config
 
 if __name__ == "__main__":
@@ -54,6 +54,10 @@ if __name__ == "__main__":
 
     # Initialize peers and calculate the graph diameter
     peers, graph_diameter = initialize_peers(N, local_ip, known_system_ips=[system_1_ip, system_2_ip])
+
+    # Update the peer registry with ports, roles, and neighbors for each peer
+    for peer in peers:
+        update_peer_info(peer.peer_id, port=peer.port, role=peer.role, neighbors=peer.neighbors)
 
     # Start all peers
     for peer in peers:

@@ -1,0 +1,23 @@
+{
+    "connected_peers": 12,
+    "peers": {
+        "0": {
+            "ip": "192.168.56.1",
+            "port": null,
+            "role": null,
+            "neighbors": []
+        },
+        "1": {
+            "ip": "192.168.56.1",
+            "port": null,
+            "role": null,
+            "neighbors": []
+        },
+        "2": {
+            "ip": "192.168.56.1",
+            "port": null,
+            "role": null,
+            "neighbors": []
+        }
+    }
+}
