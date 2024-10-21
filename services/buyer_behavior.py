@@ -74,7 +74,8 @@ def continue_search(buyer_peer, product_name, max_hops=3, mode='sequential'):
     )
 
     # Send the lookup message to neighbors
-    for neighbor_ip, neighbor_port in buyer_peer.neighbors:  # Now neighbors contain (ip, port) tuples
+    for neighbor in buyer_peer.neighbors:
+        neighbor_ip, neighbor_port = neighbor  # Expect each neighbor to be (ip, port) tuple
         buyer_peer.send_message(neighbor_ip, neighbor_port, json.dumps(lookup_message))
     
     # Record response time for this request

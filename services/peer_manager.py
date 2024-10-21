@@ -36,7 +36,7 @@ def initialize_peers(N, local_ip, known_system_ips):
             # Dynamic port assignment happens when peer starts listening
             peers.append(Peer(peer_id=peer_id, role="seller", neighbors=[], product_name=product_name, stock=stock, ip=ip))
         else:
-            peers.append(Peer(peer_id=peer_id, role="buyer", neighbors=[], ip=ip))
+            peers.append(Peer(peer_id=peer_id, role="buyer", ip=ip, neighbors=[]))
 
     # Start listening for requests and dynamically assign ports to peers
     for peer in peers:
@@ -51,26 +51,30 @@ def initialize_peers(N, local_ip, known_system_ips):
                 peer_ports[peer.peer_id] = peer.port
         time.sleep(1)
 
-     # Enforce ring topology or other topology, including known peers (cross-system)
+    # Enforce ring topology or other topology, including known peers (cross-system)
     for i, peer in enumerate(peers):
+        # Assign local neighbors as (ip, port) tuples
         peer.neighbors.extend([
-            peer_ports[(i - 1) % N],  # Connect to the previous peer in the ring
-            peer_ports[(i + 1) % N],  # Connect to the next peer in the ring
+            (local_ip, peer_ports[(i - 1) % N]),  # Connect to the previous peer in the ring
+            (local_ip, peer_ports[(i + 1) % N]),  # Connect to the next peer in the ring
         ])
         peer.port_mapping = peer_ports  # Ensure port mapping is assigned here
 
-    # Add cross-system peers as neighbors
+    # Add cross-system peers as neighbors with IP and port
     for peer in peers:
         for system_ip in known_system_ips:
             if system_ip != local_ip:
-                peer.neighbors.append(system_ip)  # Append the IP address of the other system
+                # Randomly pick two peers from the other system and connect them by IP and port
+                cross_system_peer_id = random.choice(list(peer_ports.keys()))  # Choose a random peer from the other system
+                cross_system_peer_port = peer_ports[cross_system_peer_id]
+                peer.neighbors.append((system_ip, cross_system_peer_port))  # Add as (IP, port) tuple
 
     # Display the network structure visually using NetworkX
-    # visualize_network(peers)
+    visualize_network(peers)
 
     # After initializing peers, calculate graph diameter
-    graph_diameter = 3
-    # graph_diameter = calculate_graph_diameter(peers)
+    # graph_diameter = 3
+    graph_diameter = calculate_graph_diameter(peers)
     print(f"Calculated graph diameter: {graph_diameter}")
     
     return peers, graph_diameter

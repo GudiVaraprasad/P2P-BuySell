@@ -4,7 +4,7 @@ import threading
 from network.peer_registry import register_peer, wait_for_all_peers
 
 class Peer:
-    def __init__(self, peer_id, role, neighbors, product_name=None, stock=0, ip=None):
+    def __init__(self, peer_id, role, neighbors, product_name=None, stock=0, ip=None, total_peers=6):
         self.peer_id = peer_id
         self.role = role
         self.ip = ip if ip is not None else self.get_local_ip()  # Use provided IP or get local IP dynamically
@@ -18,7 +18,7 @@ class Peer:
 
         # Register the peer in the central registry and wait for all peers
         register_peer(self.peer_id, self.ip)  # Notify central registry of this peer
-        wait_for_all_peers()  # Wait until all peers have joined the network
+        wait_for_all_peers(total_peers)  # Wait until all peers have joined the network
     
     def get_local_ip(self):
         """Function to get the local IP address of the machine."""
