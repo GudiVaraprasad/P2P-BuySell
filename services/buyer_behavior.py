@@ -52,7 +52,7 @@ def continue_search(buyer_peer, product_name, max_hops=3, mode='sequential'):
     
     # If max_requests has been reached, stop further requests
     if should_stop_simulation():
-        print(f"\nMax requests reached: {current_request}. Stopping simulation.")
+        print(f"\nMax requests reached: {current_request-1}. Stopping simulation.")
         calculate_avg_response_time()  # Calculate and print the average response time
         global terminate_flag
         terminate_flag = True  # Signal all threads to stop
@@ -74,8 +74,8 @@ def continue_search(buyer_peer, product_name, max_hops=3, mode='sequential'):
     )
 
     # Send the lookup message to neighbors
-    for neighbor_port in buyer_peer.neighbors:
-        buyer_peer.send_message(neighbor_port, json.dumps(lookup_message))
+    for neighbor_ip, neighbor_port in buyer_peer.neighbors:  # Now neighbors contain (ip, port) tuples
+        buyer_peer.send_message(neighbor_ip, neighbor_port, json.dumps(lookup_message))
     
     # Record response time for this request
     response_time = time.time() - start_time

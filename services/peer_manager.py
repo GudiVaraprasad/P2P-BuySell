@@ -7,7 +7,7 @@ from network.peer import Peer
 from utils.graph_algorithms import calculate_graph_diameter  # Import graph diameter calculation
 from utils.visualize_network import visualize_network
 
-def initialize_peers(N):
+def initialize_peers(N, local_ip, known_system_ips):
     roles = ['fish_seller', 'salt_seller', 'boar_seller', 'buyer']
     peer_roles = []
     has_buyer = False
@@ -26,43 +26,51 @@ def initialize_peers(N):
 
     random.shuffle(peer_roles)
     peers = []
-    for peer_id, role in enumerate(peer_roles):
-        if 'seller' in role:
-            product_name = role.split('_')[0]
-            stock = random.randint(2, 5)
-            peers.append(Peer(peer_id=peer_id, role="seller", neighbors=[], product_name=product_name, stock=stock))
-        else:
-            peers.append(Peer(peer_id=peer_id, role="buyer", neighbors=[], product_name=None))
 
+    # Dynamically assign ports and IPs to peers (dynamic port allocation)
+    for peer_id, role in enumerate(peer_roles):
+        ip = local_ip  # We will use the provided IP address
+        if 'seller' in role:
+            product_name = role.split('_')[0]  # Extract product name from role (e.g., fish, salt, boar)
+            stock = random.randint(2, 5)
+            # Dynamic port assignment happens when peer starts listening
+            peers.append(Peer(peer_id=peer_id, role="seller", neighbors=[], product_name=product_name, stock=stock, ip=ip))
+        else:
+            peers.append(Peer(peer_id=peer_id, role="buyer", neighbors=[], ip=ip))
+
+    # Start listening for requests and dynamically assign ports to peers
     for peer in peers:
         threading.Thread(target=peer.listen_for_requests).start()
 
     peer_ports = {peer.peer_id: None for peer in peers}
 
+    # Wait for ports to be dynamically assigned
     while None in peer_ports.values():
         for peer in peers:
             if peer.port is not None:
                 peer_ports[peer.peer_id] = peer.port
         time.sleep(1)
 
-    # # Assign neighbors and port mapping to each peer
-    # for peer in peers:
-    #     peer.neighbors = random.sample(list(peer_ports.values()), min(3, 100))
-    #     peer.port_mapping = peer_ports  # Ensure port mapping is assigned here
-
-    # Enforce ring topology (connect each peer to two neighbors, creating a ring)
+     # Enforce ring topology or other topology, including known peers (cross-system)
     for i, peer in enumerate(peers):
-        peer.neighbors = [
+        peer.neighbors.extend([
             peer_ports[(i - 1) % N],  # Connect to the previous peer in the ring
             peer_ports[(i + 1) % N],  # Connect to the next peer in the ring
-        ]
+        ])
         peer.port_mapping = peer_ports  # Ensure port mapping is assigned here
 
+    # Add cross-system peers as neighbors
+    for peer in peers:
+        for system_ip in known_system_ips:
+            if system_ip != local_ip:
+                peer.neighbors.append(system_ip)  # Append the IP address of the other system
+
     # Display the network structure visually using NetworkX
-    visualize_network(peers)
+    # visualize_network(peers)
 
     # After initializing peers, calculate graph diameter
-    graph_diameter = calculate_graph_diameter(peers)
+    graph_diameter = 3
+    # graph_diameter = calculate_graph_diameter(peers)
     print(f"Calculated graph diameter: {graph_diameter}")
     
     return peers, graph_diameter

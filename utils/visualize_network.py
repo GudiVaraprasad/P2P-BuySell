@@ -12,9 +12,15 @@ def visualize_network(peers):
     # Add edges (connections between peers) based on neighbors
     added_edges = set()  # To avoid duplicate edges
     for peer in peers:
-        for neighbor_port in peer.neighbors:
-            # Find the peer ID based on the neighbor's port
-            neighbor_id = next(p.peer_id for p in peers if p.port == neighbor_port)
+        for neighbor_ip, neighbor_port in peer.neighbors:  # Now using IP and Port as tuple
+            # Find the peer ID based on the neighbor's port and IP
+            try:
+                neighbor_id = next(
+                    p.peer_id for p in peers if p.port == neighbor_port and p.ip == neighbor_ip
+                )
+            except StopIteration:
+                print(f"Neighbor with IP {neighbor_ip} and Port {neighbor_port} not found.")
+                continue
 
             # Ensure we don't add duplicate edges in an undirected graph
             edge = tuple(sorted((peer.peer_id, neighbor_id)))

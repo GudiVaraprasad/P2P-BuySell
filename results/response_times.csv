@@ -1,11 +1,1 @@
 Request Number,Product Searched,Response Time (s),Mode
-2,boar,0.02391815185546875,sequential
-1,boar,0.03569364547729492,sequential
-3,salt,0.011099576950073242,sequential
-4,fish,0.03595685958862305,sequential
-5,boar,0.03430294990539551,sequential
-7,salt,0.03227090835571289,sequential
-6,boar,0.08240389823913574,sequential
-8,salt,0.03459572792053223,sequential
-9,fish,0.0407106876373291,sequential
-10,fish,0.014749288558959961,sequential

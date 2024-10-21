@@ -14,17 +14,19 @@ def bfs_shortest_path(start_peer_id, peer_dict):
         current_peer_id = queue.popleft()
 
         # Iterate through the neighbors of the current peer (peer_dict maps peer IDs to Peer objects)
-        for neighbor_port in peer_dict[current_peer_id].neighbors:
-            # Find the peer ID associated with this neighbor's port
-            neighbor_peer_id = next(peer.peer_id for peer in peer_dict.values() if peer.port == neighbor_port)
+        for neighbor_ip, neighbor_port in peer_dict[current_peer_id].neighbors:
+            # Find the peer ID associated with this neighbor's port and IP
+            neighbor_peer_id = next(
+                (peer.peer_id for peer in peer_dict.values() if peer.port == neighbor_port and peer.ip == neighbor_ip),
+                None
+            )
 
-            if not visited[neighbor_peer_id]:
+            if neighbor_peer_id is not None and not visited[neighbor_peer_id]:
                 visited[neighbor_peer_id] = True
                 distance[neighbor_peer_id] = distance[current_peer_id] + 1
                 queue.append(neighbor_peer_id)
 
     return distance
-
 
 def calculate_graph_diameter(peers):
     """Calculate the graph diameter, which is the longest shortest path between any two peers."""
