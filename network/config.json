@@ -4,7 +4,7 @@
     "peers_count": 3
   },
   "system_2": {
-    "ip": "192.168.1.152",
+    "ip": "192.168.56.1",
     "peers_count": 3
   },
   "mode": "sequential"
