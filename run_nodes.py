@@ -1,4 +1,3 @@
-# Mac Users: run_nodes.py
 import subprocess
 import os
 import random
